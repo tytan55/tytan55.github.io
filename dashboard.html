@@ -1,1 +1,228 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroMonitor - Panou Utilizator</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 id="userName">Nume Utilizator</h3>
+                <p id="userEmail">email@example.com</p>
+            </div>
+            
+            <nav>
+                <ul>
+                    <li class="active" data-tab="monitor"><i class="fas fa-chart-line"></i> Monitorizare</li>
+                    <li data-tab="crops"><i class="fas fa-seedling"></i> Recoltele Mele</li>
+                    <li data-tab="alerts"><i class="fas fa-bell"></i> Alertă</li>
+                    <li data-tab="ai"><i class="fas fa-robot"></i> Asistent AI</li>
+                    <li id="userLogoutBtn"><i class="fas fa-sign-out-alt"></i> Deconectare</li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="content">
+            <div class="header">
+                <h1 id="dashboardTitle">Monitorizare Recolte</h1>
+                <div class="user-actions">
+                    <button class="btn-notification" id="notificationsBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notificationCount">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="tab-content active" id="monitor-tab">
+                <div class="crop-selector">
+                    <select id="selectedCrop" class="custom-select">
+                        <option value="">Selectează recolta...</option>
+                        <!-- Populated by JavaScript -->
+                    </select>
+                    <button class="btn-add-crop" id="addCropBtn"><i class="fas fa-plus"></i> Adaugă Recoltă</button>
+                </div>
+                
+                <div class="dashboard-cards" id="cropDashboard">
+                    <div class="welcome-message">
+                        <h2>Bun venit în AgroMonitor!</h2>
+                        <p>Selectează o recoltă pentru a începe monitorizarea.</p>
+                        <img src="assets/images/farmer.svg" alt="Farmer" class="welcome-image">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="crops-tab">
+                <div class="my-crops-header">
+                    <h2>Recoltele Mele</h2>
+                    <button class="btn-add-crop" id="addNewCropBtn"><i class="fas fa-plus"></i> Adaugă Recoltă Nouă</button>
+                </div>
+                
+                <div class="crops-grid" id="myCropsContainer">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="alerts-tab">
+                <div class="alerts-header">
+                    <h2>Alertă și Notificări</h2>
+                    <div class="time-filter">
+                        <select id="alertsFilter">
+                            <option value="all">Toate</option>
+                            <option value="today">Astăzi</option>
+                            <option value="week">Ultima săptămână</option>
+                            <option value="month">Ultima lună</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="alerts-container" id="alertsContainer">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="ai-tab">
+                <div class="ai-chat-container">
+                    <div class="ai-header">
+                        <h2>Asistent Agricol AI</h2>
+                        <p>Pune întrebări despre recoltele tale și primește recomandări personalizate.</p>
+                    </div>
+                    
+                    <div class="ai-chat" id="aiChat">
+                        <div class="ai-message">
+                            <div class="ai-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <p>Bună! Sunt asistentul tău agricol AI. Cu ce te pot ajuta astăzi în legătură cu recoltele tale?</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-input">
+                        <input type="text" id="aiMessageInput" placeholder="Scrie întrebarea ta aici...">
+                        <button id="sendAiMessage"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modals -->
+    <div class="modal" id="addCropModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Adaugă Recoltă Nouă</h3>
+            <form id="addCropForm">
+                <div class="form-group">
+                    <label for="newCropCode">Cod Recoltă</label>
+                    <input type="text" id="newCropCode" placeholder="Introdu codul recolei" required>
+                </div>
+                <button type="submit" class="btn-add">Adaugă</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="cropDetailsModal">
+        <div class="modal-content large">
+            <span class="close-modal">&times;</span>
+            <div class="crop-details-header">
+                <h3 id="detailCropName">Nume Recoltă</h3>
+                <div class="crop-actions">
+                    <button class="btn-action" id="viewLiveBtn"><i class="fas fa-video"></i> Vizualizare Live</button>
+                    <button class="btn-action" id="removeCropBtn"><i class="fas fa-trash"></i> Elimină Recoltă</button>
+                </div>
+            </div>
+            
+            <div class="crop-details-content">
+                <div class="crop-info">
+                    <div class="info-card">
+                        <h4>Informații Generale</h4>
+                        <ul>
+                            <li><strong>Cod:</strong> <span id="detailCropCode">-</span></li>
+                            <li><strong>Soi:</strong> <span id="detailCropVariety">-</span></li>
+                            <li><strong>Data adăugării:</strong> <span id="detailCropDate">-</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="variety-selector">
+                        <label for="cropVarietySelect">Selectează soiul:</label>
+                        <select id="cropVarietySelect" class="custom-select">
+                            <!-- Populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="crop-params">
+                    <h4>Parametrii Recoltei</h4>
+                    <div class="params-grid" id="paramsContainer">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="crop-charts">
+                <h4>Evoluția Parametrilor</h4>
+                <div class="chart-filters">
+                    <select id="chartParamSelect" class="custom-select">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                    <select id="chartPeriodSelect" class="custom-select">
+                        <option value="7">Ultimele 7 zile</option>
+                        <option value="30">Ultimele 30 zile</option>
+                        <option value="90">Ultimele 90 zile</option>
+                    </select>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="cropChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="liveViewModal">
+        <div class="modal-content xlarge">
+            <span class="close-modal">&times;</span>
+            <h3>Vizualizare Live - <span id="liveCropName">Nume Recoltă</span></h3>
+            <div class="live-view-container">
+                <div class="live-feed" id="liveFeed">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Se încarcă camera...</p>
+                    </div>
+                </div>
+                <div class="live-controls">
+                    <button class="btn-control" id="zoomInBtn"><i class="fas fa-search-plus"></i></button>
+                    <button class="btn-control" id="zoomOutBtn"><i class="fas fa-search-minus"></i></button>
+                    <button class="btn-control" id="fullscreenBtn"><i class="fas fa-expand"></i></button>
+                    <button class="btn-control" id="captureBtn"><i class="fas fa-camera"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="confirmDeleteModal">
+        <div class="modal-content small">
+            <h3>Confirmă Ștergerea</h3>
+            <p>Ești sigur că dorești să elimini această recoltă din monitorizare?</p>
+            <div class="confirm-buttons">
+                <button class="btn-cancel" id="cancelDeleteBtn">Anulează</button>
+                <button class="btn-confirm" id="confirmDeleteBtn">Confirmă</button>
+            </div>
+        </div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/charts.js"></script>
+</body>
+</html>
