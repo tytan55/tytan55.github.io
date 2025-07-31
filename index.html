@@ -1,88 +1,432 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Monitorizare Recolte</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viticultor Pro | Monitorizare Recoltă</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="login-page" id="login-page">
-    <h1>Autentificare</h1>
-    <form id="login-form">
-      <input type="text" id="username" placeholder="Username" required />
-      <input type="password" id="password" placeholder="Parolă" required />
-      <button type="submit">Conectează-te</button>
-      <p><a href="#" id="admin-login">Autentificare admin</a></p>
-    </form>
-  </div>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+        </svg>
+    </button>
 
-  <div class="admin-panel" id="admin-panel" style="display:none">
-    <h2>Panou Admin</h2>
-    <input type="text" id="admin-search" placeholder="Caută utilizator sau recoltă..." />
-    <div id="admin-users">
-      <h3>Utilizatori</h3>
-      <ul id="user-list"></ul>
-      <button onclick="showAddUserModal()">Adaugă Utilizator</button>
+    <div class="app-container">
+        <!-- Formular pentru introducerea username-ului -->
+        <div class="username-container" id="username-container">
+            <h1>Monitor Viță de Vie</h1>
+            <p>Introduceți username-ul pentru a accesa datele:</p>
+            <input type="text" class="input-field" id="username-input" placeholder="Username" required>
+            <div class="error-message" id="username-error"></div>
+            <div class="remember-me">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me">Rămâi conectat</label>
+            </div>
+            <button class="submit-btn" id="submit-username">Accesează</button>
+            <a class="admin-link" id="admin-login-link" tabindex="0">Acces administrator</a>
+        </div>
+
+        <!-- Formular de login pentru admin -->
+        <div class="login-container" id="login-container" style="display: none;">
+            <h2>Autentificare Administrator</h2>
+            <div class="form-group">
+                <label for="admin-username">Username:</label>
+                <input type="text" class="input-field" id="admin-username" required>
+            </div>
+            <div class="form-group">
+                <label for="admin-password">Password:</label>
+                <input type="password" class="input-field" id="admin-password" required>
+                <div class="error-message" id="login-error"></div>
+            </div>
+            <button class="submit-btn" id="login-btn">Login</button>
+            <button class="submit-btn" style="background: var(--btn-disabled); margin-top: 0.5rem;" id="back-btn">Înapoi</button>
+        </div>
+
+        <!-- Panoul de administrare -->
+        <div class="admin-panel" id="admin-panel">
+            <h2>Panou Administrare</h2>
+            
+            <input type="text" class="search-bar" id="admin-search" placeholder="Caută utilizator sau recoltă..." aria-label="Search users and wineries">
+            
+            <div class="admin-filters">
+                <div class="filter-group">
+                    <label for="filter-type">Filtrează după:</label>
+                    <select id="filter-type">
+                        <option value="all">Toate</option>
+                        <option value="user">Utilizatori</option>
+                        <option value="winery">Recolte</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sort-by">Sortează după:</label>
+                    <select id="sort-by">
+                        <option value="name">Nume</option>
+                        <option value="code">Cod</option>
+                        <option value="location">Locație</option>
+                        <option value="area">Suprafață</option>
+                    </select>
+                    <button class="sort-btn" id="sort-direction" data-direction="asc">
+                        <span id="sort-icon">↑</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <div class="section-header">
+                    <h3>Utilizatori</h3>
+                    <button class="add-btn" id="add-user-btn">+ Adaugă utilizator</button>
+                </div>
+                <div class="user-list" id="user-list">
+                    <!-- Lista utilizatorilor va fi populată din JavaScript -->
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <div class="section-header">
+                    <h3>Recolte</h3>
+                    <button class="add-btn" id="add-winery-admin-btn">+ Adaugă recoltă</button>
+                </div>
+                <div class="winery-list" id="winery-list">
+                    <!-- Lista recoltelor va fi populată din JavaScript -->
+                </div>
+            </div>
+            
+            <button class="submit-btn" style="background: var(--btn-danger); margin-top: 1.5rem;" id="admin-logout-btn">Deconectare</button>
+        </div>
+
+        <!-- Secțiunea pentru afișarea listei de recolte -->
+        <div id="wineries-section" style="display: none;">
+            <header>
+                <h1>Recoltele mele</h1>
+                <div class="subtitle">Selectați o recoltă pentru a vizualiza datele</div>
+            </header>
+
+            <div class="winery-grid" id="winery-grid">
+                <!-- Recoltele vor fi adăugate dinamic aici -->
+            </div>
+
+            <button class="add-winery-btn" id="add-winery-btn">Adaugă recoltă nouă</button>
+            <button class="back-btn" id="back-to-username-btn">Înapoi</button>
+        </div>
+
+        <!-- Panoul principal de date (initial ascuns) -->
+        <div id="main-content" style="display: none;">
+            <header>
+                <h1>Monitor Recoltă Viță de Vie</h1>
+                <div class="winery-name" id="current-winery-name"></div>
+                <div class="subtitle">Monitorizare avansată a parametrilor viticoli</div>
+            </header>
+
+            <div class="parameters-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Monitorizare în timp real</h2>
+                        <div class="variety-select">
+                            <label for="variety-select">Soi:</label>
+                            <select id="variety-select">
+                                <!-- Soiurile vor fi populate dinamic -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Statusul recoltei -->
+                    <div class="status-container" id="status-container">
+                        <div class="status-indicator">
+                            <div class="status-light" id="status-light"></div>
+                            <div class="status-text" id="status-text">Se încarcă...</div>
+                        </div>
+                        <div class="status-description" id="status-description"></div>
+                    </div>
+                    
+                    <!-- Grid cu parametri -->
+                    <div class="parameters-grid" id="parameters-grid">
+                        <!-- Parametrii vor fi adăugați dinamic aici -->
+                    </div>
+                    
+                    <!-- Sectiune de avertizare compactă -->
+                    <div class="warning-box" id="warning-box" style="display: none;">
+                        <div class="warning-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--danger)" width="20px" height="20px">
+                                <path d="M12 2L1 21h22L12 2zm0 3.5L18.5 19h-13L12 5.5z"/>
+                                <path d="M12 16c.8 0 1.5-.7 1.5-1.5S12.8 13 12 13s-1.5.7-1.5 1.5.7 1.5 1.5 1.5zm-1-6h2v-4h-2v4z"/>
+                            </svg>
+                            <h3>Atenție: Probleme detectate</h3>
+                        </div>
+                        <div class="warning-message" id="warning-message"></div>
+                    </div>
+                    
+                    <button id="refresh-btn" class="refresh-btn">Actualizează datele</button>
+                    <button id="live-camera-btn" class="refresh-btn" style="background: var(--btn-accent); margin-top: 1rem;">Accesează camera live</button>
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Evoluția parametrilor</h2>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="harvest-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-controls">
+                        <div class="timeframe-selector">
+                            <button class="timeframe-btn active" data-timeframe="7">7 zile</button>
+                            <button class="timeframe-btn" data-timeframe="30">30 zile</button>
+                            <button class="timeframe-btn" data-timeframe="90">90 zile</button>
+                        </div>
+                        
+                        <div class="parameter-selectors">
+                            <div class="parameter-selector">
+                                <input type="checkbox" id="show-sugar" checked>
+                                <label for="show-sugar">Zahăr</label>
+                            </div>
+                            <div class="parameter-selector">
+                                <input type="checkbox" id="show-acidity" checked>
+                                <label for="show-acidity">Aciditate</label>
+                            </div>
+                            <div class="parameter-selector">
+                                <input type="checkbox" id="show-ph" checked>
+                                <label for="show-ph">pH</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buton pentru a reveni la lista de recolte -->
+            <button class="back-btn" id="back-to-wineries-btn">Înapoi la lista de recolte</button>
+        </div>
     </div>
-    <div id="admin-harvests">
-      <h3>Recolte</h3>
-      <ul id="harvest-list"></ul>
-      <button onclick="showAddHarvestModal()">Adaugă Recoltă</button>
-    </div>
-    <button onclick="logout()">Ieşire</button>
-  </div>
 
-  <div class="user-panel" id="user-panel" style="display:none">
-    <h2>Bun venit, <span id="current-user"></span></h2>
-    <select id="harvest-selector"></select>
-    <button onclick="addHarvestToUser()">Adaugă Recoltă</button>
-    <button onclick="confirmDeleteHarvest()">Șterge Recoltă</button>
-
-    <div id="delete-confirm" style="display:none">
-      <p>Ești sigur că vrei să ștergi recolta?</p>
-      <button onclick="deleteHarvestFromUser()">Da</button>
-      <button onclick="cancelDelete()">Nu</button>
-    </div>
-
-    <div id="plant-selector-container">
-      <label for="plant-selector">Soi / Plantă:</label>
-      <select id="plant-selector"></select>
-    </div>
-
-    <div class="parameters">
-      <h3>Parametri</h3>
-      <ul id="parameter-list"></ul>
+    <!-- Modal pentru adăugare recoltă -->
+    <div class="modal" id="add-winery-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Adăugare recoltă nouă</h2>
+                <button class="close-modal" id="close-add-winery" aria-label="Close modal">&times;</button>
+            </div>
+            <form id="add-winery-form">
+                <div class="form-group">
+                    <label for="winery-code">Cod recoltă:</label>
+                    <input type="text" id="winery-code" class="input-field" required 
+                           pattern="[A-Za-z0-9]{3,10}" 
+                           title="Codul trebuie să conțină între 3 și 10 caractere alfanumerice">
+                    <div class="error-message" id="winery-code-error" style="display: none;"></div>
+                    <div class="validation-error" id="winery-code-validation">Cod invalid. Folosiți doar litere și cifre (3-10 caractere).</div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">Asociază</button>
+                    <button type="button" class="submit-btn" style="background: var(--btn-disabled);" id="cancel-add-winery">Anulează</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div class="alerts" id="alerts"></div>
-
-    <div>
-      <label>Grafic evoluție:</label>
-      <select id="chart-period">
-        <option value="7">7 zile</option>
-        <option value="30">30 zile</option>
-        <option value="90">90 zile</option>
-      </select>
-      <canvas id="harvest-chart"></canvas>
+    <!-- Modal pentru editare recoltă -->
+    <div class="modal" id="edit-winery-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Editare recoltă</h2>
+                <button class="close-modal" id="close-edit-winery" aria-label="Close modal">&times;</button>
+            </div>
+            <form id="edit-winery-form">
+                <input type="hidden" id="edit-winery-id">
+                <div class="form-group">
+                    <label for="edit-winery-name">Nume recoltă:</label>
+                    <input type="text" id="edit-winery-name" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-winery-code">Cod recoltă:</label>
+                    <input type="text" id="edit-winery-code" class="input-field" required 
+                           pattern="[A-Za-z0-9]{3,10}" 
+                           title="Codul trebuie să conțină între 3 și 10 caractere alfanumerice">
+                </div>
+                <div class="form-group">
+                    <label for="edit-winery-location">Locație:</label>
+                    <input type="text" id="edit-winery-location" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-winery-area">Suprafață (ha):</label>
+                    <input type="number" id="edit-winery-area" class="input-field" step="0.1" required min="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="edit-winery-varieties">Soiuri (separate prin virgulă):</label>
+                    <input type="text" id="edit-winery-varieties" class="input-field" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">Salvează modificările</button>
+                    <button type="button" class="submit-btn" style="background: var(--btn-disabled);" id="cancel-edit-winery">Anulează</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div>
-      <button onclick="openLiveCamera()">Camera live</button>
-      <button onclick="openChat()">Discuție cu AI</button>
+    <!-- Modal pentru editare utilizator -->
+    <div class="modal" id="edit-user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Editare utilizator</h2>
+                <button class="close-modal" id="close-edit-user" aria-label="Close modal">&times;</button>
+            </div>
+            <form id="edit-user-form">
+                <input type="hidden" id="edit-user-id">
+                <div class="form-group">
+                    <label for="edit-username">Username:</label>
+                    <input type="text" id="edit-username" class="input-field" required 
+                           pattern="[A-Za-z0-9]{3,20}" 
+                           title="Username-ul trebuie să conțină între 3 și 20 caractere alfanumerice">
+                </div>
+                <div class="form-group">
+                    <label>Cod de securitate:</label>
+                    <div class="security-code" id="user-security-code"></div>
+                </div>
+                <div class="form-group">
+                    <label>Asociază recolte:</label>
+                    <div id="winery-checkboxes" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); padding: 0.5rem; border-radius: 4px;">
+                        <!-- Checkbox-urile pentru recolte vor fi adăugate aici dinamic -->
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">Salvează modificările</button>
+                    <button type="button" class="submit-btn" style="background: var(--btn-disabled);" id="cancel-edit-user">Anulează</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <button onclick="logout()">Ieșire</button>
-  </div>
 
-  <div class="chat-box" id="chat-box" style="display:none">
-    <h4>Asistent AI Viticol</h4>
-    <div id="chat-messages"></div>
-    <input type="text" id="chat-input" placeholder="Scrie o întrebare..." />
-    <button onclick="sendMessageToAI()">Trimite</button>
-  </div>
+    <!-- Modal pentru adăugare utilizator -->
+    <div class="modal" id="add-user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Adăugare utilizator nou</h2>
+                <button class="close-modal" id="close-add-user" aria-label="Close modal">&times;</button>
+            </div>
+            <form id="add-user-form">
+                <div class="form-group">
+                    <label for="new-username">Username:</label>
+                    <input type="text" id="new-username" class="input-field" required 
+                           pattern="[A-Za-z0-9]{3,20}" 
+                           title="Username-ul trebuie să conțină între 3 și 20 caractere alfanumerice">
+                </div>
+                <div class="form-group">
+                    <label>Cod de securitate generat:</label>
+                    <div class="security-code" id="new-user-security-code"></div>
+                </div>
+                <div class="form-group">
+                    <label>Asociază recolte:</label>
+                    <div id="new-user-winery-checkboxes" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); padding: 0.5rem; border-radius: 4px;">
+                        <!-- Checkbox-urile pentru recolte vor fi adăugate aici dinamic -->
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">Salvează</button>
+                    <button type="button" class="submit-btn" style="background: var(--btn-disabled);" id="cancel-add-user">Anulează</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-  <script src="app.js"></script>
+    <!-- Modal pentru adăugare recoltă din admin -->
+    <div class="modal" id="add-winery-admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Adăugare recoltă nouă</h2>
+                <button class="close-modal" id="close-add-winery-admin" aria-label="Close modal">&times;</button>
+            </div>
+            <form id="add-winery-admin-form">
+                <div class="form-group">
+                    <label for="new-winery-name">Nume recoltă:</label>
+                    <input type="text" id="new-winery-name" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-winery-code">Cod recoltă:</label>
+                    <input type="text" id="new-winery-code" class="input-field" required 
+                           pattern="[A-Za-z0-9]{3,10}" 
+                           title="Codul trebuie să conțină între 3 și 10 caractere alfanumerice">
+                </div>
+                <div class="form-group">
+                    <label for="new-winery-location">Locație:</label>
+                    <input type="text" id="new-winery-location" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-winery-area">Suprafață (ha):</label>
+                    <input type="number" id="new-winery-area" class="input-field" step="0.1" required min="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="new-winery-varieties">Soiuri (separate prin virgulă):</label>
+                    <input type="text" id="new-winery-varieties" class="input-field" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">Salvează</button>
+                    <button type="button" class="submit-btn" style="background: var(--btn-disabled);" id="cancel-add-winery-admin">Anulează</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal pentru confirmare stergere -->
+    <div class="modal" id="confirm-delete-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Confirmare ștergere</h2>
+                <button class="close-modal" id="close-confirm-delete" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-delete-message">Sunteți sigur că doriți să ștergeți această recoltă?</p>
+            </div>
+            <div class="form-actions">
+                <button class="submit-btn" style="background: var(--btn-danger);" id="confirm-delete-btn">Șterge</button>
+                <button type="button" class="submit-btn" style="background: var(--btn-disabled);" id="cancel-delete-btn">Anulează</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pentru camera live -->
+    <div class="modal" id="live-camera-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Camera Live</h2>
+                <button class="close-modal" id="close-live-camera" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="camera-container">
+                    <img src="https://via.placeholder.com/800x450?text=Camera+Live" alt="Camera live" id="live-camera-feed">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Widget -->
+    <div class="chat-container">
+        <button class="chat-toggle" id="chat-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+        </button>
+        <div class="chat-box" id="chat-box">
+            <div class="chat-header">
+                <span>Asistent Viticol AI</span>
+                <button class="close-chat" id="close-chat">&times;</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai-message">
+                    Bună! Sunt asistentul tău viticol. Cu ce te pot ajuta astăzi?
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Scrie mesajul tău..." aria-label="Mesaj către asistent">
+                <button class="send-btn" id="send-btn">Trimite</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
