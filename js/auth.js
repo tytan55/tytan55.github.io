@@ -1,70 +1,107 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Elemente DOM
     const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const tabs = document.querySelectorAll('.tab');
+    const forms = document.querySelectorAll('.form');
     const adminLoginLink = document.getElementById('adminLogin');
-    const notification = document.getElementById('notification');
     
-    // Test users data
-    const users = [
-        { username: 'user1', password: 'pass1', isAdmin: false },
-        { username: 'admin', password: 'admin123', isAdmin: true }
+    // Schimbare între login și register
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            
+            // Actualizează tab-urile active
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Actualizează formularele vizibile
+            forms.forEach(form => form.classList.remove('active'));
+            document.getElementById(`${tabId}Form`).classList.add('active');
+        });
+    });
+    
+    // Date utilizatori (în aplicația reală, acestea ar fi stocate pe server)
+    let users = [
+        { username: 'copil1', email: 'copil1@example.com', password: 'parola1', isAdmin: false },
+        { username: 'admin', email: 'admin@example.com', password: 'admin123', isAdmin: true }
     ];
     
-    // Check if user is already logged in
-    if(localStorage.getItem('loggedInUser')) {
-        const user = JSON.parse(localStorage.getItem('loggedInUser'));
-        redirectUser(user);
-    }
-    
-    // Handle login form submission
+    // Autentificare
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         
-        // Validate credentials
+        // Verifică credențialele
         const user = users.find(u => u.username === username && u.password === password);
         
         if(user) {
-            // Save user to localStorage
-            localStorage.setItem('loggedInUser', JSON.stringify(user));
+            // Salvează utilizatorul autentificat
+            localStorage.setItem('currentUser', JSON.stringify(user));
             
-            // Show success message
-            showNotification('Autentificare reușită!', 'success');
-            
-            // Redirect after delay
-            setTimeout(() => {
-                redirectUser(user);
-            }, 1000);
+            // Redirecționează către dashboard
+            window.location.href = user.isAdmin ? 'admin.html' : 'dashboard.html';
         } else {
-            showNotification('Nume de utilizator sau parolă incorectă!', 'error');
+            showError('Nume de utilizator sau parolă incorectă!');
         }
     });
     
-    // Handle admin login link
+    // Înregistrare
+    registerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('regUsername').value;
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPassword').value;
+        
+        // Verifică dacă utilizatorul există deja
+        const userExists = users.some(u => u.username === username || u.email === email);
+        
+        if(userExists) {
+            showError('Numele de utilizator sau email-ul este deja folosit!');
+            return;
+        }
+        
+        // Adaugă noul utilizator
+        const newUser = {
+            username,
+            email,
+            password,
+            isAdmin: false
+        };
+        
+        users.push(newUser);
+        
+        // Salvează utilizatorul autentificat
+        localStorage.setItem('currentUser', JSON.stringify(newUser));
+        
+        // Redirecționează către dashboard
+        window.location.href = 'dashboard.html';
+    });
+    
+    // Link pentru admin
     adminLoginLink.addEventListener('click', function(e) {
         e.preventDefault();
         document.getElementById('username').value = 'admin';
         document.getElementById('password').value = 'admin123';
     });
     
-    // Function to show notification
-    function showNotification(message, type) {
-        notification.textContent = message;
-        notification.className = 'notification ' + type;
-        notification.style.display = 'block';
+    // Funcție pentru afișarea erorilor
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
         
+        // Adaugă mesajul de eroare
+        const activeForm = document.querySelector('.form.active');
+        activeForm.appendChild(errorDiv);
+        
+        // Elimină mesajul după 3 secunde
         setTimeout(() => {
-            notification.style.display = 'none';
+            errorDiv.classList.add('fade-out');
+            setTimeout(() => errorDiv.remove(), 300);
         }, 3000);
-    }
-    
-    // Function to redirect user based on role
-    function redirectUser(user) {
-        if(user.isAdmin) {
-            window.location.href = 'admin.html';
-        } else {
-            window.location.href = 'dashboard.html';
-        }
     }
 });
