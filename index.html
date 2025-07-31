@@ -3,22 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroMonitor - Autentificare</title>
-    <link rel="stylesheet" href="css/auth.css">
+    <title>AgroMonitor Junior</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="background-animation"></div>
-    <div class="container">
-        <div class="login-box animate__animated animate__fadeIn">
-            <div class="logo">
-                <i class="fas fa-leaf"></i>
-                <h1>AgroMonitor</h1>
+    <div class="background">
+        <div class="bubbles"></div>
+        <div class="animals">
+            <div class="animal cow"></div>
+            <div class="animal sheep"></div>
+            <div class="animal chicken"></div>
+        </div>
+    </div>
+    
+    <div class="login-container">
+        <div class="logo">
+            <img src="assets/logo.svg" alt="AgroMonitor Junior">
+            <h1>Bine ai venit în <span>AgroMonitor Junior</span>!</h1>
+        </div>
+        
+        <div class="login-box">
+            <div class="tabs">
+                <button class="tab active" data-tab="login">Intră în cont</button>
+                <button class="tab" data-tab="register">Creează cont</button>
             </div>
             
-            <form id="loginForm">
+            <form id="loginForm" class="form active">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
                     <input type="text" id="username" placeholder="Nume utilizator" required>
@@ -27,13 +39,46 @@
                     <i class="fas fa-lock"></i>
                     <input type="password" id="password" placeholder="Parolă" required>
                 </div>
-                <button type="submit" class="btn-login">Autentificare</button>
+                <button type="submit" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> Autentificare
+                </button>
                 <div class="admin-link">
-                    <a href="#" id="adminLogin">Acces administrator</a>
+                    <a href="#" id="adminLogin"><i class="fas fa-user-shield"></i> Sunt administrator</a>
                 </div>
             </form>
             
-            <div class="notification" id="notification"></div>
+            <form id="registerForm" class="form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="regUsername" placeholder="Alege un nume" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="regEmail" placeholder="Adresa de email" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="regPassword" placeholder="Creează o parolă" required>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-user-plus"></i> Înregistrare
+                </button>
+            </form>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-seedling"></i>
+                <p>Monitorizează-ți recolta</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-chart-line"></i>
+                <p>Vezi progresul</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-robot"></i>
+                <p>Asistent inteligent</p>
+            </div>
         </div>
     </div>
 
