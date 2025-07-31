@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
             darkMode: false,
             users: [],
             wineries: [],
-            chatHistory: []
+            chatHistory: [],
+            chart: null
         },
 
         // Elemente DOM
@@ -53,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 loginForm: document.getElementById('login-form'),
                 usernameInput: document.getElementById('username-input'),
                 passwordInput: document.getElementById('password-input'),
+                passwordInputContainer: document.getElementById('password-input-container'),
                 loginError: document.getElementById('login-error'),
                 adminLoginBtn: document.getElementById('admin-login-btn'),
                 
@@ -63,6 +65,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 wineryManagementSection: document.getElementById('winery-management'),
                 adminSearch: document.getElementById('admin-search'),
                 adminLogoutBtn: document.getElementById('admin-logout-btn'),
+                addUserBtn: document.getElementById('add-user-btn'),
+                addWineryAdminBtn: document.getElementById('add-winery-admin-btn'),
+                userList: document.getElementById('user-list'),
+                wineryList: document.getElementById('winery-list'),
                 
                 // User panel
                 userPanel: document.getElementById('user-panel'),
@@ -88,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmMessage: document.getElementById('confirm-message'),
                 confirmYesBtn: document.getElementById('confirm-yes'),
                 confirmNoBtn: document.getElementById('confirm-no'),
+                closeConfirmModal: document.getElementById('close-confirm-modal'),
                 
                 // Camera live
                 cameraModal: document.getElementById('camera-modal'),
@@ -103,16 +110,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Admin modals
                 addEditUserModal: document.getElementById('add-edit-user-modal'),
-                addEditWineryModal: document.getElementById('add-edit-winery-modal')
+                addEditWineryModal: document.getElementById('add-edit-winery-modal'),
+                userForm: document.getElementById('user-form'),
+                wineryForm: document.getElementById('winery-form'),
+                userId: document.getElementById('user-id'),
+                editUsername: document.getElementById('edit-username'),
+                editPassword: document.getElementById('edit-password'),
+                wineryCheckboxes: document.getElementById('winery-checkboxes'),
+                closeUserModal: document.getElementById('close-user-modal'),
+                wineryId: document.getElementById('winery-id'),
+                wineryName: document.getElementById('winery-name'),
+                wineryCode: document.getElementById('winery-code'),
+                wineryLocation: document.getElementById('winery-location'),
+                wineryPlants: document.getElementById('winery-plants'),
+                closeWineryModal: document.getElementById('close-winery-modal')
             };
         },
 
         // Încărcare date
         loadData: function() {
             // Încărcare date din localStorage sau folosire valori implicite
-            this.state.users = JSON.parse(localStorage.getItem('wineAppUsers')) || this.getDefaultUsers();
-            this.state.wineries = JSON.parse(localStorage.getItem('wineAppWineries')) || this.getDefaultWineries();
-            this.state.chatHistory = JSON.parse(localStorage.getItem('wineAppChatHistory')) || [];
+            const savedUsers = localStorage.getItem('wineAppUsers');
+            const savedWineries = localStorage.getItem('wineAppWineries');
+            const savedChat = localStorage.getItem('wineAppChatHistory');
+            
+            this.state.users = savedUsers ? JSON.parse(savedUsers) : this.getDefaultUsers();
+            this.state.wineries = savedWineries ? JSON.parse(savedWineries) : this.getDefaultWineries();
+            this.state.chatHistory = savedChat ? JSON.parse(savedChat) : [];
+            
+            // Salvăm în caz că nu existau date
+            this.saveData();
         },
 
         // Salvarea datelor
@@ -176,6 +203,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     ],
                     history: this.generateHistoryData()
+                },
+                {
+                    id: 3,
+                    code: "VIT2023003",
+                    name: "Podgoria Exemplu",
+                    location: "Cotnari",
+                    plants: [
+                        {
+                            name: "Fetească Albă",
+                            parameters: this.generatePlantParameters()
+                        },
+                        {
+                            name: "Fetească Neagră",
+                            parameters: this.generatePlantParameters()
+                        }
+                    ],
+                    history: this.generateHistoryData()
                 }
             ];
         },
@@ -233,6 +277,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Legare evenimente
         bindEvents: function() {
+            // Theme toggle
+            this.elements.themeToggle.addEventListener('click', () => {
+                this.toggleDarkMode(!this.state.darkMode);
+            });
+
             // Login form
             this.elements.loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -242,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Admin login
             this.elements.adminLoginBtn.addEventListener('click', () => {
                 this.elements.loginForm.dataset.mode = 'admin';
-                this.elements.passwordInput.style.display = 'block';
+                this.elements.passwordInputContainer.style.display = 'block';
                 this.elements.loginForm.querySelector('h2').textContent = 'Autentificare Administrator';
             });
 
@@ -278,6 +327,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (e.target.classList.contains('timeframe-btn')) {
                     this.state.currentTimeframe = parseInt(e.target.dataset.days);
                     this.updateChart();
+                    
+                    // Update active button
+                    Array.from(this.elements.timeframeControls.children).forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    e.target.classList.add('active');
                 }
             });
 
@@ -300,6 +355,68 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (e.key === 'Enter') {
                     this.handleChatMessage();
                 }
+            });
+
+            // Navigare admin
+            this.elements.adminNav.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const section = e.target.dataset.section;
+                    this.showAdminSection(section);
+                    
+                    // Update active button
+                    Array.from(this.elements.adminNav.children).forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    e.target.classList.add('active');
+                }
+            });
+
+            // Buton adăugare utilizator
+            this.elements.addUserBtn.addEventListener('click', () => {
+                this.showAddEditUserModal();
+            });
+
+            // Buton adăugare recoltă
+            this.elements.addWineryAdminBtn.addEventListener('click', () => {
+                this.showAddEditWineryModal();
+            });
+
+            // Închidere modale
+            this.elements.closeConfirmModal.addEventListener('click', () => {
+                this.closeModal('confirm-modal');
+            });
+
+            this.elements.closeCameraBtn.addEventListener('click', () => {
+                this.closeModal('camera-modal');
+            });
+
+            this.elements.closeChatBtn.addEventListener('click', () => {
+                this.closeModal('chat-modal');
+            });
+
+            this.elements.closeUserModal.addEventListener('click', () => {
+                this.closeModal('add-edit-user-modal');
+            });
+
+            this.elements.closeWineryModal.addEventListener('click', () => {
+                this.closeModal('add-edit-winery-modal');
+            });
+
+            // Formular adăugare/editare utilizator
+            this.elements.userForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleUserFormSubmit();
+            });
+
+            // Formular adăugare/editare recoltă
+            this.elements.wineryForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleWineryFormSubmit();
+            });
+
+            // Căutare admin
+            this.elements.adminSearch.addEventListener('input', () => {
+                this.handleAdminSearch();
             });
         },
 
@@ -345,8 +462,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Resetare formular
             this.elements.loginForm.reset();
             this.elements.loginForm.dataset.mode = '';
-            this.elements.passwordInput.style.display = 'none';
+            this.elements.passwordInputContainer.style.display = 'none';
             this.elements.loginForm.querySelector('h2').textContent = 'Autentificare Utilizator';
+            this.elements.loginError.style.display = 'none';
             
             // Ascunde toate panourile
             this.hideAllPanels();
@@ -360,7 +478,85 @@ document.addEventListener('DOMContentLoaded', function() {
         renderAdminPanel: function() {
             this.hideAllPanels();
             this.elements.adminPanel.style.display = 'block';
-            this.renderUserManagement();
+            this.renderUserList();
+            this.renderWineryListAdmin();
+        },
+
+        // Funcții pentru navigație admin
+        showAdminSection: function(section) {
+            // Ascunde toate secțiunile
+            document.querySelectorAll('.admin-section').forEach(sec => {
+                sec.style.display = 'none';
+            });
+            
+            // Afișează secțiunea cerută
+            document.getElementById(section).style.display = 'block';
+        },
+
+        // Randare lista utilizatori în admin
+        renderUserList: function() {
+            this.elements.userList.innerHTML = '';
+            
+            this.state.users.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.className = 'admin-item';
+                userItem.innerHTML = `
+                    <div>${user.username}</div>
+                    <div class="admin-actions">
+                        <button class="admin-btn edit-btn" data-id="${user.id}">Edit</button>
+                        <button class="admin-btn delete-btn" data-id="${user.id}">Delete</button>
+                    </div>
+                `;
+                
+                // Adăugare evenimente pentru butoane
+                userItem.querySelector('.edit-btn').addEventListener('click', (e) => {
+                    const userId = parseInt(e.target.dataset.id);
+                    this.showAddEditUserModal(userId);
+                });
+                
+                userItem.querySelector('.delete-btn').addEventListener('click', (e) => {
+                    const userId = parseInt(e.target.dataset.id);
+                    this.showConfirmModal(`Sigur doriți să ștergeți utilizatorul ${user.username}?`, {
+                        type: 'delete-user',
+                        id: userId
+                    });
+                });
+                
+                this.elements.userList.appendChild(userItem);
+            });
+        },
+
+        // Randare lista recolte în admin
+        renderWineryListAdmin: function() {
+            this.elements.wineryList.innerHTML = '';
+            
+            this.state.wineries.forEach(winery => {
+                const wineryItem = document.createElement('div');
+                wineryItem.className = 'admin-item';
+                wineryItem.innerHTML = `
+                    <div>${winery.name} (${winery.code})</div>
+                    <div class="admin-actions">
+                        <button class="admin-btn edit-btn" data-id="${winery.id}">Edit</button>
+                        <button class="admin-btn delete-btn" data-id="${winery.id}">Delete</button>
+                    </div>
+                `;
+                
+                // Adăugare evenimente pentru butoane
+                wineryItem.querySelector('.edit-btn').addEventListener('click', (e) => {
+                    const wineryId = parseInt(e.target.dataset.id);
+                    this.showAddEditWineryModal(wineryId);
+                });
+                
+                wineryItem.querySelector('.delete-btn').addEventListener('click', (e) => {
+                    const wineryId = parseInt(e.target.dataset.id);
+                    this.showConfirmModal(`Sigur doriți să ștergeți recolta ${winery.name}?`, {
+                        type: 'delete-winery',
+                        id: wineryId
+                    });
+                });
+                
+                this.elements.wineryList.appendChild(wineryItem);
+            });
         },
 
         // Randare selecție recoltă utilizator
@@ -540,12 +736,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Inițializare grafic
         initChart: function() {
-            if (this.chart) {
-                this.chart.destroy();
+            if (this.state.chart) {
+                this.state.chart.destroy();
             }
             
             const ctx = document.getElementById('harvest-chart').getContext('2d');
-            this.chart = new Chart(ctx, {
+            this.state.chart = new Chart(ctx, {
                 type: 'line',
                 data: this.getChartData(),
                 options: {
@@ -574,10 +770,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Actualizare grafic
         updateChart: function() {
-            if (!this.chart) return;
+            if (!this.state.chart) return;
             
-            this.chart.data = this.getChartData();
-            this.chart.update();
+            this.state.chart.data = this.getChartData();
+            this.state.chart.update();
         },
 
         // Pregătire date grafic
@@ -641,15 +837,13 @@ document.addEventListener('DOMContentLoaded', function() {
         showConfirmModal: function(message, action) {
             this.elements.confirmMessage.textContent = message;
             this.elements.confirmModal.dataset.action = JSON.stringify(action);
-            this.elements.modalOverlay.style.display = 'flex';
-            this.elements.confirmModal.style.display = 'block';
+            this.showModal('confirm-modal');
         },
 
         handleConfirm: function(confirmed) {
             const action = JSON.parse(this.elements.confirmModal.dataset.action);
             
-            this.elements.modalOverlay.style.display = 'none';
-            this.elements.confirmModal.style.display = 'none';
+            this.closeModal('confirm-modal');
             
             if (!confirmed) return;
             
@@ -657,7 +851,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 case 'remove-winery':
                     this.removeUserWinery(action.wineryId);
                     break;
-                // Poți adăuga alte acțiuni aici
+                case 'delete-user':
+                    this.deleteUser(action.id);
+                    break;
+                case 'delete-winery':
+                    this.deleteWinery(action.id);
+                    break;
             }
         },
 
@@ -666,6 +865,27 @@ document.addEventListener('DOMContentLoaded', function() {
             this.state.currentUser.wineries = this.state.currentUser.wineries.filter(id => id !== wineryId);
             this.saveData();
             this.renderWinerySelection();
+        },
+
+        // Ștergere utilizator
+        deleteUser: function(userId) {
+            this.state.users = this.state.users.filter(u => u.id !== userId);
+            this.saveData();
+            this.renderUserList();
+        },
+
+        // Ștergere recoltă
+        deleteWinery: function(wineryId) {
+            // Elimină recolta din lista tuturor utilizatorilor
+            this.state.users.forEach(user => {
+                user.wineries = user.wineries.filter(id => id !== wineryId);
+            });
+            
+            // Elimină recolta
+            this.state.wineries = this.state.wineries.filter(w => w.id !== wineryId);
+            
+            this.saveData();
+            this.renderWineryListAdmin();
         },
 
         // Selectare recoltă
@@ -682,15 +902,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="loading-animation"></div>
                 </div>
             `;
-            this.elements.modalOverlay.style.display = 'flex';
-            this.elements.cameraModal.style.display = 'block';
+            this.showModal('camera-modal');
         },
 
         // Afișare chat
         showChatModal: function() {
             this.loadChatHistory();
-            this.elements.modalOverlay.style.display = 'flex';
-            this.elements.chatModal.style.display = 'block';
+            this.showModal('chat-modal');
             this.elements.chatInput.focus();
         },
 
@@ -832,22 +1050,203 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         },
 
+        // Funcții pentru admin
+        showAddEditUserModal: function(userId = null) {
+            // Resetare formular
+            this.elements.userForm.reset();
+            this.elements.userId.value = '';
+            
+            // Dacă este editare, completează datele
+            if (userId) {
+                const user = this.getUserById(userId);
+                if (user) {
+                    this.elements.userId.value = user.id;
+                    this.elements.editUsername.value = user.username;
+                    this.elements.editPassword.value = user.password;
+                    
+                    // Selectează recolele asociate
+                    this.renderWineryCheckboxes(user.wineries);
+                }
+            } else {
+                this.renderWineryCheckboxes([]);
+            }
+            
+            this.showModal('add-edit-user-modal');
+        },
+
+        showAddEditWineryModal: function(wineryId = null) {
+            // Resetare formular
+            this.elements.wineryForm.reset();
+            this.elements.wineryId.value = '';
+            
+            // Dacă este editare, completează datele
+            if (wineryId) {
+                const winery = this.getWineryById(wineryId);
+                if (winery) {
+                    this.elements.wineryId.value = winery.id;
+                    this.elements.wineryName.value = winery.name;
+                    this.elements.wineryCode.value = winery.code;
+                    this.elements.wineryLocation.value = winery.location;
+                    this.elements.wineryPlants.value = winery.plants.map(p => p.name).join(', ');
+                }
+            }
+            
+            this.showModal('add-edit-winery-modal');
+        },
+
+        renderWineryCheckboxes: function(selectedWineries) {
+            this.elements.wineryCheckboxes.innerHTML = '';
+            
+            this.state.wineries.forEach(winery => {
+                const checkboxDiv = document.createElement('div');
+                const checkboxId = `winery-${winery.id}`;
+                
+                checkboxDiv.innerHTML = `
+                    <input type="checkbox" id="${checkboxId}" value="${winery.id}" 
+                        ${selectedWineries.includes(winery.id) ? 'checked' : ''}>
+                    <label for="${checkboxId}">${winery.name}</label>
+                `;
+                
+                this.elements.wineryCheckboxes.appendChild(checkboxDiv);
+            });
+        },
+
+        handleUserFormSubmit: function() {
+            const userId = this.elements.userId.value ? parseInt(this.elements.userId.value) : this.getNextUserId();
+            const username = this.elements.editUsername.value.trim();
+            const password = this.elements.editPassword.value;
+            
+            // Obține recoltele selectate
+            const wineries = Array.from(this.elements.wineryCheckboxes.querySelectorAll('input:checked'))
+                .map(checkbox => parseInt(checkbox.value));
+            
+            // Creează sau actualizează utilizatorul
+            const userIndex = this.state.users.findIndex(u => u.id === userId);
+            const userData = {
+                id: userId,
+                username,
+                password,
+                wineries
+            };
+            
+            if (userIndex === -1) {
+                this.state.users.push(userData);
+            } else {
+                this.state.users[userIndex] = userData;
+            }
+            
+            this.saveData();
+            this.renderUserList();
+            this.closeModal('add-edit-user-modal');
+        },
+
+        handleWineryFormSubmit: function() {
+            const wineryId = this.elements.wineryId.value ? parseInt(this.elements.wineryId.value) : this.getNextWineryId();
+            const name = this.elements.wineryName.value.trim();
+            const code = this.elements.wineryCode.value.trim();
+            const location = this.elements.wineryLocation.value.trim();
+            const plants = this.elements.wineryPlants.value.split(',').map(p => p.trim()).filter(p => p);
+            
+            // Creează obiectul planta cu parametri
+            const plantObjects = plants.map(plantName => ({
+                name: plantName,
+                parameters: this.generatePlantParameters()
+            }));
+            
+            // Creează sau actualizează recolta
+            const wineryIndex = this.state.wineries.findIndex(w => w.id === wineryId);
+            const wineryData = {
+                id: wineryId,
+                code,
+                name,
+                location,
+                plants: plantObjects,
+                history: this.generateHistoryData()
+            };
+            
+            if (wineryIndex === -1) {
+                this.state.wineries.push(wineryData);
+            } else {
+                this.state.wineries[wineryIndex] = wineryData;
+            }
+            
+            this.saveData();
+            this.renderWineryListAdmin();
+            this.closeModal('add-edit-winery-modal');
+        },
+
+        handleAdminSearch: function() {
+            const searchTerm = this.elements.adminSearch.value.toLowerCase();
+            const currentSection = document.querySelector('.admin-section:not([style*="display: none"])').id;
+            
+            if (currentSection === 'user-management') {
+                this.renderUserList();
+                
+                if (searchTerm) {
+                    const userItems = this.elements.userList.querySelectorAll('.admin-item');
+                    userItems.forEach(item => {
+                        const username = item.querySelector('div').textContent.toLowerCase();
+                        if (!username.includes(searchTerm)) {
+                            item.style.display = 'none';
+                        }
+                    });
+                }
+            } else if (currentSection === 'winery-management') {
+                this.renderWineryListAdmin();
+                
+                if (searchTerm) {
+                    const wineryItems = this.elements.wineryList.querySelectorAll('.admin-item');
+                    wineryItems.forEach(item => {
+                        const wineryText = item.querySelector('div').textContent.toLowerCase();
+                        if (!wineryText.includes(searchTerm)) {
+                            item.style.display = 'none';
+                        }
+                    });
+                }
+            }
+        },
+
+        // Funcții utilitare
+        getNextUserId: function() {
+            return this.state.users.length > 0 ? Math.max(...this.state.users.map(u => u.id)) + 1 : 1;
+        },
+
+        getNextWineryId: function() {
+            return this.state.wineries.length > 0 ? Math.max(...this.state.wineries.map(w => w.id)) + 1 : 1;
+        },
+
+        getWineryById: function(id) {
+            return this.state.wineries.find(w => w.id === id);
+        },
+
+        getUserById: function(id) {
+            return this.state.users.find(u => u.id === id);
+        },
+
+        // Gestionare modale
+        showModal: function(modalId) {
+            this.elements.modalOverlay.style.display = 'flex';
+            document.getElementById(modalId).style.display = 'block';
+        },
+
+        closeModal: function(modalId) {
+            this.elements.modalOverlay.style.display = 'none';
+            document.getElementById(modalId).style.display = 'none';
+        },
+
         // Ascundere toate panourile
         hideAllPanels: function() {
             this.elements.loginContainer.style.display = 'none';
             this.elements.adminPanel.style.display = 'none';
             this.elements.userPanel.style.display = 'none';
-            this.elements.winerySelection.style.display = 'none';
-            this.elements.monitoringPanel.style.display = 'none';
-            this.elements.modalOverlay.style.display = 'none';
-            this.elements.confirmModal.style.display = 'none';
-            this.elements.cameraModal.style.display = 'none';
-            this.elements.chatModal.style.display = 'none';
+            this.closeAllModals();
         },
 
-        // Găsire recoltă după ID
-        getWineryById: function(id) {
-            return this.state.wineries.find(w => w.id === id);
+        closeAllModals: function() {
+            this.elements.modalOverlay.style.display = 'none';
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
         },
 
         // Inițializare temă
