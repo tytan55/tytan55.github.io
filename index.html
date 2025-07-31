@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor Viță de Vie | Monitorizare Recoltă</title>
+    <title>Viticultor Pro | Monitorizare Recoltă</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Buton toggle theme -->
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"></circle>
@@ -16,47 +15,55 @@
         </svg>
     </button>
 
-    <div class="container">
-        <!-- Header -->
-        <header class="text-center">
+    <div class="app-container">
+        <!-- Formular username -->
+        <div class="username-container" id="username-container">
             <h1>Monitor Viță de Vie</h1>
-            <p class="subtitle">Monitorizare avansată a parametrilor viticoli</p>
-        </header>
+            <input type="text" class="input-field" id="username-input" placeholder="Username" required>
+            <button class="submit-btn" id="submit-username">Accesează</button>
+            <a class="admin-link" id="admin-login-link">Acces administrator</a>
+        </div>
 
-        <!-- Secțiunea principală -->
-        <main>
-            <!-- Card recolta curenta -->
-            <section class="card">
-                <div class="card-header">
-                    <h2>Recolta curentă</h2>
-                    <div class="winery-name">Vinaria Regală - Soi: Merlot</div>
-                </div>
-                
-                <div class="status-container">
-                    <div class="status-indicator">
-                        <div class="status-light"></div>
-                        <div class="status-text">Stare bună</div>
-                    </div>
-                    <div class="status-description">
-                        Toți parametrii sunt în limitele optime pentru acest soi.
-                    </div>
-                </div>
-                
-                <div class="parameters-grid">
-                    <!-- Parametrii vor fi adăugati dinamic -->
-                </div>
-            </section>
+        <!-- Panou administrator -->
+        <div class="admin-panel" id="admin-panel" style="display:none">
+            <h2>Panou Administrare</h2>
+            <div class="admin-section">
+                <h3>Utilizatori</h3>
+                <div class="user-list" id="user-list"></div>
+            </div>
+            <div class="admin-section">
+                <h3>Recolte</h3>
+                <div class="winery-list" id="winery-list"></div>
+            </div>
+        </div>
 
-            <!-- Card evolutie parametri -->
-            <section class="card">
-                <h2>Evoluția parametrilor</h2>
+        <!-- Lista recolte -->
+        <div class="winery-grid" id="winery-grid" style="display:none"></div>
+
+        <!-- Monitorizare recoltă -->
+        <div class="dashboard" id="dashboard" style="display:none">
+            <div class="card">
+                <h2 id="current-winery-name"></h2>
+                <div class="parameters-grid" id="parameters-grid"></div>
                 <div class="chart-container">
                     <canvas id="harvest-chart"></canvas>
                 </div>
-            </section>
-        </main>
+            </div>
+        </div>
+
+        <!-- Chat AI -->
+        <div class="chat-container">
+            <div class="chat-box" id="chat-box">
+                <div class="chat-messages" id="chat-messages"></div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Scrie mesajul tău...">
+                    <button class="send-btn" id="send-btn">Trimite</button>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
