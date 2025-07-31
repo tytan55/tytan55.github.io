@@ -1,1 +1,175 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroMonitor - Panou Administrator</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                <h2>AgroMonitor</h2>
+                <p>Panou Administrator</p>
+            </div>
+            
+            <nav>
+                <ul>
+                    <li class="active" data-tab="users"><i class="fas fa-users"></i> Utilizatori</li>
+                    <li data-tab="crops"><i class="fas fa-seedling"></i> Recolte</li>
+                    <li data-tab="reports"><i class="fas fa-chart-bar"></i> Rapoarte</li>
+                    <li id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Deconectare</li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="content">
+            <div class="search-bar">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="adminSearch" placeholder="Caută utilizatori sau recolte...">
+                </div>
+            </div>
+            
+            <div class="tab-content active" id="users-tab">
+                <div class="header">
+                    <h2>Gestionare Utilizatori</h2>
+                    <button class="btn-add" id="addUserBtn"><i class="fas fa-plus"></i> Adaugă Utilizator</button>
+                </div>
+                
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nume</th>
+                            <th>Email</th>
+                            <th>Data Înregistrare</th>
+                            <th>Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="tab-content" id="crops-tab">
+                <div class="header">
+                    <h2>Gestionare Recolte</h2>
+                    <button class="btn-add" id="addCropBtn"><i class="fas fa-plus"></i> Adaugă Recoltă</button>
+                </div>
+                
+                <table class="crops-table">
+                    <thead>
+                        <tr>
+                            <th>Cod</th>
+                            <th>Denumire</th>
+                            <th>Soi</th>
+                            <th>Data Adăugării</th>
+                            <th>Utilizator</th>
+                            <th>Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cropsTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="tab-content" id="reports-tab">
+                <div class="header">
+                    <h2>Rapoarte și Statistici</h2>
+                </div>
+                
+                <div class="reports-container">
+                    <div class="report-card">
+                        <h3>Utilizatori Activi</h3>
+                        <div class="chart-container">
+                            <canvas id="usersChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <h3>Recolte Monitorizate</h3>
+                        <div class="chart-container">
+                            <canvas id="cropsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modals -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="modalUserTitle">Adaugă Utilizator</h3>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <label for="userName">Nume Utilizator</label>
+                    <input type="text" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPassword">Parolă</label>
+                    <input type="password" id="userPassword" required>
+                </div>
+                <button type="submit" class="btn-save">Salvează</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="cropModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="modalCropTitle">Adaugă Recoltă</h3>
+            <form id="cropForm">
+                <input type="hidden" id="cropId">
+                <div class="form-group">
+                    <label for="cropCode">Cod Recoltă</label>
+                    <input type="text" id="cropCode" required>
+                </div>
+                <div class="form-group">
+                    <label for="cropName">Denumire</label>
+                    <input type="text" id="cropName" required>
+                </div>
+                <div class="form-group">
+                    <label for="cropVariety">Soi</label>
+                    <input type="text" id="cropVariety" required>
+                </div>
+                <div class="form-group">
+                    <label for="cropUser">Utilizator</label>
+                    <select id="cropUser" required>
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+                <button type="submit" class="btn-save">Salvează</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="confirmModal">
+        <div class="modal-content small">
+            <h3 id="confirmTitle">Confirmă Acțiunea</h3>
+            <p id="confirmMessage">Ești sigur că dorești să ștergi acest utilizator?</p>
+            <div class="confirm-buttons">
+                <button class="btn-cancel" id="confirmCancel">Anulează</button>
+                <button class="btn-confirm" id="confirmAction">Confirmă</button>
+            </div>
+        </div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
