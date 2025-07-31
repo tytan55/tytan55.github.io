@@ -1,1 +1,157 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroMonitor - Panou Administrator</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="images/logo-white.png" alt="AgroMonitor Logo" class="logo">
+                <h3>Panou Administrator</h3>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="#"><i class="fas fa-users"></i> Utilizatori</a></li>
+                    <li><a href="#"><i class="fas fa-leaf"></i> Recolte</a></li>
+                    <li><a href="#"><i class="fas fa-chart-line"></i> Rapoarte</a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> Setări</a></li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn-secondary"><i class="fas fa-sign-out-alt"></i> Deconectare</button>
+            </div>
+        </aside>
+        
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="search-box">
+                    <input type="text" id="adminSearch" placeholder="Caută utilizatori sau recolte...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                
+                <div class="user-profile">
+                    <img src="images/admin-avatar.png" alt="Admin Avatar">
+                    <span>Administrator</span>
+                </div>
+            </header>
+            
+            <section class="admin-content">
+                <div class="content-header">
+                    <h2>Gestionare Utilizatori</h2>
+                    <button id="addUserBtn" class="btn-primary"><i class="fas fa-plus"></i> Adaugă Utilizator</button>
+                </div>
+                
+                <div class="content-table">
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nume</th>
+                                <th>Email</th>
+                                <th>Data Înregistrare</th>
+                                <th>Acțiuni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datele vor fi populate din JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="content-header mt-40">
+                    <h2>Gestionare Recolte</h2>
+                    <button id="addCropBtn" class="btn-primary"><i class="fas fa-plus"></i> Adaugă Recoltă</button>
+                </div>
+                
+                <div class="content-table">
+                    <table id="cropsTable">
+                        <thead>
+                            <tr>
+                                <th>Cod Recoltă</th>
+                                <th>Denumire</th>
+                                <th>Soi</th>
+                                <th>Data Plantării</th>
+                                <th>Acțiuni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datele vor fi populate din JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
 
+    <!-- Modale -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Adaugă Utilizator Nou</h3>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label for="newUsername">Nume Utilizator</label>
+                    <input type="text" id="newUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="newUserEmail">Email</label>
+                    <input type="email" id="newUserEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="newUserPassword">Parolă</label>
+                    <input type="password" id="newUserPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Salvează</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addCropModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Adaugă Recoltă Nouă</h3>
+            <form id="addCropForm">
+                <div class="form-group">
+                    <label for="cropCode">Cod Recoltă</label>
+                    <input type="text" id="cropCode" required>
+                </div>
+                <div class="form-group">
+                    <label for="cropName">Denumire Recoltă</label>
+                    <input type="text" id="cropName" required>
+                </div>
+                <div class="form-group">
+                    <label for="cropVariety">Soi</label>
+                    <input type="text" id="cropVariety" required>
+                </div>
+                <div class="form-group">
+                    <label for="plantingDate">Data Plantării</label>
+                    <input type="date" id="plantingDate" required>
+                </div>
+                <button type="submit" class="btn-primary">Salvează</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="modal">
+        <div class="modal-content confirm-modal">
+            <h3 id="confirmMessage">Sigur doriți să ștergeți acest element?</h3>
+            <div class="confirm-buttons">
+                <button id="confirmCancel" class="btn-secondary">Anulează</button>
+                <button id="confirmDelete" class="btn-danger">Șterge</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
