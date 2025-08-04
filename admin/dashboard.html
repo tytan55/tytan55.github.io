@@ -1,1 +1,44 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Panou Admin</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">VineMaster Admin</div>
+            <nav>
+                <ul>
+                    <li class="active"><a href="dashboard.html"><i class="icon-dashboard"></i> Dashboard</a></li>
+                    <li><a href="manage-users.html"><i class="icon-users"></i> Utilizatori</a></li>
+                    <li><a href="#"><i class="icon-parcels"></i> Parcele</a></li>
+                    <li><a href="#"><i class="icon-settings"></i> Setări</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="admin-content">
+            <header class="admin-header">
+                <h1>Panou de Control</h1>
+                <button id="logoutBtn"><i class="icon-logout"></i> Deconectare</button>
+            </header>
+            
+            <div class="admin-stats">
+                <!-- Statistici vor fi încărcate din JS -->
+            </div>
+            
+            <div class="admin-actions">
+                <h2>Acțiuni Rapide</h2>
+                <div class="action-buttons">
+                    <button id="addUserBtn"><i class="icon-add-user"></i> Adaugă Utilizator</button>
+                    <button id="addParcelBtn"><i class="icon-add-parcel"></i> Adaugă Parcelă</button>
+                </div>
+            </div>
+        </main>
+    </div>
 
+    <script src="../../js/admin.js" type="module"></script>
+</body>
+</html>
