@@ -1,1 +1,26 @@
-
+[
+    {
+        "id": "parcela-a1",
+        "name": "Parcela A1",
+        "variety": "Merlot",
+        "area": "2.5 ha",
+        "plantingYear": 2015,
+        "lastHarvest": "2023-09-15",
+        "avgQuality": 8.7,
+        "coordinates": [44.43, 26.10],
+        "status": "excelent",
+        "notes": "Parcela cu cea mai bună calitate a strugurilor"
+    },
+    {
+        "id": "parcela-b2",
+        "name": "Parcela B2",
+        "variety": "Cabernet Sauvignon",
+        "area": "1.8 ha",
+        "plantingYear": 2018,
+        "lastHarvest": "2023-09-20",
+        "avgQuality": 7.9,
+        "coordinates": [44.425, 26.095],
+        "status": "probleme umiditate",
+        "notes": "Necesită irigație suplimentară"
+    }
+]
