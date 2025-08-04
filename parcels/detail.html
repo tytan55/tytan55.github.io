@@ -1,1 +1,49 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalii Parcelă</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1 id="parcelTitle">Parcela</h1>
+            <div class="header-actions">
+                <button id="backBtn">
+                    <i class="icon-back"></i> Înapoi
+                </button>
+            </div>
+        </header>
+        
+        <main class="parcel-detail">
+            <div class="detail-section">
+                <h2>Informații Generale</h2>
+                <div id="generalInfo"></div>
+            </div>
+            
+            <div class="detail-section">
+                <h2>Monitorizare</h2>
+                <div class="chart-container">
+                    <canvas id="parcelChart"></canvas>
+                </div>
+                <div class="chart-controls">
+                    <select id="timeRange">
+                        <option value="7">7 zile</option>
+                        <option value="30">30 zile</option>
+                        <option value="90">90 zile</option>
+                    </select>
+                    <select id="sensorSelect" multiple>
+                        <option value="temp">Temperatură</option>
+                        <option value="humidity">Umiditate</option>
+                        <option value="ph">pH Sol</option>
+                    </select>
+                </div>
+            </div>
+        </main>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/app.js" type="module"></script>
+</body>
+</html>
