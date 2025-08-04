@@ -1,66 +1,64 @@
-// Enhanced authentication flow
-document.addEventListener('DOMContentLoaded', () => {
-    const roleSelection = document.getElementById('roleSelection');
-    const loginForm = document.getElementById('loginForm');
-    const roleButtons = document.querySelectorAll('.role-btn');
-    
-    let selectedRole = null;
-    
-    // Role selection
-    roleButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            selectedRole = e.currentTarget.dataset.role;
-            
-            // Highlight selected role
-            roleButtons.forEach(btn => {
-                btn.style.backgroundColor = 'white';
-                btn.style.color = 'var(--primary)';
-            });
-            
-            e.currentTarget.style.backgroundColor = 'var(--primary)';
-            e.currentTarget.style.color = 'white';
-            
-            // Show login form
-            roleSelection.classList.add('hidden');
-            loginForm.classList.remove('hidden');
-        });
-    });
-    
-    // Login form submission
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const errorElement = document.getElementById('loginError');
-        
-        // In a real app, this would be an API call
-        fetch('data/users.json')
-            .then(response => response.json())
-            .then(users => {
-                const user = users.find(u => 
-                    u.username === username && 
-                    u.password === password && 
-                    u.role === selectedRole
-                );
-                
-                if (user) {
-                    sessionStorage.setItem('currentUser', JSON.stringify(user));
-                    window.location.href = user.role === 'admin' ? 'admin.html' : 'index.html';
-                } else {
-                    showError(errorElement, 'Credențiale incorecte sau rol necorespunzător');
-                }
-            })
-            .catch(() => {
-                showError(errorElement, 'Eroare la conectare');
-            });
+// Database simulation
+const users = [
+    {
+        id: 1,
+        username: "admin",
+        password: "admin123",
+        role: "admin",
+        name: "Administrator Sistem"
+    },
+    {
+        id: 2,
+        username: "user",
+        password: "user123",
+        role: "user",
+        name: "Viticultor Exemplu"
+    }
+];
+
+// DOM Elements
+const roleButtons = document.querySelectorAll('.role-btn');
+const loginForm = document.getElementById('loginForm');
+let selectedRole = 'user';
+
+// Role selection
+roleButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        roleButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        selectedRole = button.dataset.role;
     });
 });
 
-function showError(element, message) {
-    element.textContent = message;
-    element.style.display = 'block';
-    setTimeout(() => {
-        element.style.display = 'none';
-    }, 3000);
-}
+// Login handler
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    const user = users.find(u => 
+        u.username === username && 
+        u.password === password && 
+        u.role === selectedRole
+    );
+    
+    if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        window.location.href = user.role === 'admin' ? 
+            'admin/dashboard.html' : 
+            'parcels/list.html';
+    } else {
+        alert('Autentificare eșuată! Verifică datele.');
+    }
+});
+
+// Check existing session
+window.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('currentUser')) {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        window.location.href = user.role === 'admin' ? 
+            'admin/dashboard.html' : 
+            'parcels/list.html';
+    }
+});
