@@ -1,1 +1,14 @@
-
+[
+    {
+        "username": "admin",
+        "password": "admin123",
+        "role": "admin",
+        "fullName": "Administrator Sistem"
+    },
+    {
+        "username": "viticultor",
+        "password": "parola123",
+        "role": "user",
+        "fullName": "Ion Popescu"
+    }
+]
