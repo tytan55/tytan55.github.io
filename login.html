@@ -3,54 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VineMaster Pro | Autentificare</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>VineMaster Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/auth.css">
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
+    <div class="auth-container">
+        <div class="auth-card">
             <div class="logo">
-                <i class="fas fa-wine-glass-alt"></i>
-                <span>VineMaster Pro</span>
+                <img src="assets/logo.svg" alt="VineMaster">
+                <h1>VineMaster Pro</h1>
             </div>
-            <p>Sistem avansat de monitorizare a viței de vie</p>
-        </div>
-        
-        <div class="role-selection" id="roleSelection">
-            <h3>Selectează rolul:</h3>
-            <div class="role-options">
-                <button class="role-btn" data-role="admin">
-                    <i class="fas fa-user-shield"></i>
-                    Administrator
-                </button>
-                <button class="role-btn" data-role="user">
-                    <i class="fas fa-user"></i>
+            
+            <div class="role-selector">
+                <button class="role-btn active" data-role="user">
+                    <i class="icon-user"></i>
                     Viticultor
                 </button>
+                <button class="role-btn" data-role="admin">
+                    <i class="icon-admin"></i>
+                    Administrator
+                </button>
             </div>
+            
+            <form id="loginForm" class="auth-form">
+                <div class="input-group">
+                    <label for="username">Utilizator</label>
+                    <input type="text" id="username" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Parolă</label>
+                    <input type="password" id="password" required>
+                </div>
+                
+                <button type="submit" class="auth-btn">
+                    Autentificare <i class="icon-arrow"></i>
+                </button>
+            </form>
         </div>
-        
-        <form id="loginForm" class="login-form hidden">
-            <div class="form-group">
-                <label for="username"><i class="fas fa-user"></i> Utilizator</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="password"><i class="fas fa-lock"></i> Parolă</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            
-            <button type="submit" class="login-btn">
-                <i class="fas fa-sign-in-alt"></i> Autentificare
-            </button>
-            
-            <div id="loginError" class="error-message"></div>
-        </form>
     </div>
 
-    <script src="js/auth.js"></script>
+    <script src="js/auth.js" type="module"></script>
 </body>
 </html>
