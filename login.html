@@ -1,1 +1,44 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VineMaster Pro | Autentificare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <i class="fas fa-wine-glass-alt"></i>
+            <h1>VineMaster Pro</h1>
+            <p>Sistem integrat de monitorizare a viței de vie</p>
+        </div>
+        
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="username"><i class="fas fa-user"></i> Utilizator</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Parolă</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Autentificare
+            </button>
+            
+            <div id="loginError" class="error-message"></div>
+        </form>
+        
+        <div class="login-footer">
+            <p>© 2024 VineMaster Pro | Versiunea 2.0</p>
+        </div>
+    </div>
 
+    <script src="js/auth.js"></script>
+</body>
+</html>
