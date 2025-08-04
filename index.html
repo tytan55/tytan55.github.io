@@ -3,42 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroMonitor - Autentificare</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>VineMaster Pro | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <div class="login-container fade-in">
-        <div class="login-header">
-            <img src="images/logo.png" alt="AgroMonitor Logo" class="logo">
-            <h1>Bun venit la AgroMonitor</h1>
-            <p>Sistemul tău inteligent pentru monitorizarea recoltelor</p>
-        </div>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-wine-glass-alt"></i>
+                <h1>VineMaster</h1>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="index.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="parcels.html">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <span>Parcele</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="harvest.html">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Recolte</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="weather.html">
+                            <i class="fas fa-cloud-sun"></i>
+                            <span>Meteo</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="reports.html">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Rapoarte</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <span class="username" id="currentUsername"></span>
+                        <span class="user-role" id="currentUserRole"></span>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Deconectare</span>
+                </button>
+            </div>
+        </aside>
         
-        <div class="login-form">
-            <div class="form-group">
-                <label for="username">Nume utilizator</label>
-                <input type="text" id="username" placeholder="Introdu numele de utilizator">
-            </div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                <div class="header-actions">
+                    <div class="date-display" id="currentDate"></div>
+                </div>
+            </header>
             
-            <div class="form-group">
-                <label for="password">Parolă</label>
-                <input type="password" id="password" placeholder="Introdu parola">
+            <div class="content-grid">
+                <!-- Content will be loaded dynamically -->
+                <div class="card">
+                    <h3><i class="fas fa-chart-area"></i> Evoluția Recoltei</h3>
+                    <canvas id="harvestChart"></canvas>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-bell"></i> Alerte Active</h3>
+                    <div id="alertsContainer"></div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-cloud-sun"></i> Vremea Actuală</h3>
+                    <div id="weatherContainer"></div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-tachometer-alt"></i> Indicatori Cheie</h3>
+                    <div id="kpiContainer"></div>
+                </div>
+                
+                <div class="card full-width">
+                    <h3><i class="fas fa-map-marked-alt"></i> Harta Parcelelor</h3>
+                    <div id="parcelsMap"></div>
+                </div>
+                
+                <div class="card full-width">
+                    <h3><i class="fas fa-table"></i> Ultimele Măsurători</h3>
+                    <div id="measurementsTable"></div>
+                </div>
             </div>
-            
-            <button id="loginBtn" class="btn-primary">Autentificare</button>
-            
-            <div class="admin-link">
-                <a href="#" id="adminLoginLink">Acces administrator</a>
-            </div>
-        </div>
-        
-        <div class="login-footer">
-            <p>© 2023 AgroMonitor. Toate drepturile rezervate.</p>
-        </div>
+        </main>
     </div>
 
-    <script src="js/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/map.js"></script>
 </body>
 </html>
