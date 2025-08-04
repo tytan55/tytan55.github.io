@@ -1,94 +1,50 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Verify admin role
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-    if (!currentUser || currentUser.role !== 'admin') {
-        window.location.href = 'login.html';
-        return;
+// Verify admin role
+document.addEventListener('DOMContentLoaded', () => {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user || user.role !== 'admin') {
+        window.location.href = '../../login.html';
     }
-
-    // Load stats
+    
+    // Load admin data
     loadAdminStats();
     
-    // Load recent activity
-    loadRecentActivity();
-    
-    // Set current date
-    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ro-RO', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-    
-    // Button event listeners
-    document.getElementById('addUserBtn').addEventListener('click', () => {
-        window.location.href = 'admin-users.html?action=add';
-    });
-    
-    document.getElementById('addParcelBtn').addEventListener('click', () => {
-        window.location.href = 'admin-parcels.html?action=add';
-    });
-    
+    // Setup event listeners
     document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('addUserBtn').addEventListener('click', () => {
+        window.location.href = 'manage-users.html?action=add';
+    });
 });
 
 async function loadAdminStats() {
-    try {
-        // In a real app, these would be API calls
-        const [users, parcels, sensors] = await Promise.all([
-            fetch('data/users.json').then(res => res.json()),
-            fetch('data/parcels.json').then(res => res.json()),
-            fetch('data/sensors.json').then(res => res.json())
-        ]);
-        
-        document.getElementById('userCount').textContent = users.length;
-        document.getElementById('parcelCount').textContent = parcels.length;
-        document.getElementById('sensorCount').textContent = sensors.filter(s => s.active).length;
-        
-        // Count critical alerts
-        const alerts = await fetch('data/alerts.json').then(res => res.json());
-        document.getElementById('alertCount').textContent = alerts.filter(a => a.priority === 'high').length;
-    } catch (error) {
-        console.error('Error loading stats:', error);
-    }
-}
-
-async function loadRecentActivity() {
-    try {
-        const activities = await fetch('data/activities.json').then(res => res.json());
-        const activityList = document.getElementById('activityList');
-        
-        activityList.innerHTML = activities.slice(0, 5).map(activity => `
-            <div class="activity-item">
-                <div class="activity-icon">
-                    <i class="fas ${getActivityIcon(activity.type)}"></i>
-                </div>
-                <div class="activity-details">
-                    ${activity.description}
-                </div>
-                <div class="activity-time">
-                    ${new Date(activity.timestamp).toLocaleTimeString('ro-RO')}
-                </div>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading activities:', error);
-    }
-}
-
-function getActivityIcon(type) {
-    const icons = {
-        login: 'fa-sign-in-alt',
-        logout: 'fa-sign-out-alt',
-        create: 'fa-plus-circle',
-        update: 'fa-edit',
-        delete: 'fa-trash-alt',
-        alert: 'fa-exclamation-triangle'
+    // Simulated API call
+    const stats = {
+        users: 24,
+        parcels: 15,
+        activeSensors: 42,
+        alerts: 3
     };
-    return icons[type] || 'fa-info-circle';
+    
+    document.querySelector('.admin-stats').innerHTML = `
+        <div class="stat-card">
+            <h3>Utilizatori</h3>
+            <p>${stats.users}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Parcele</h3>
+            <p>${stats.parcels}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Senzori Activi</h3>
+            <p>${stats.activeSensors}</p>
+        </div>
+        <div class="stat-card alert">
+            <h3>Alerte</h3>
+            <p>${stats.alerts}</p>
+        </div>
+    `;
 }
 
 function logout() {
-    sessionStorage.removeItem('currentUser');
-    window.location.href = 'login.html';
+    localStorage.removeItem('currentUser');
+    window.location.href = '../../login.html';
 }
