@@ -1,42 +1,66 @@
-// Sample user data (in production, use a server-side solution)
-const users = [
-    { username: "admin", password: "admin123", role: "admin" },
-    { username: "viticultor", password: "parola123", role: "user" }
-];
-
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+// Enhanced authentication flow
+document.addEventListener('DOMContentLoaded', () => {
+    const roleSelection = document.getElementById('roleSelection');
+    const loginForm = document.getElementById('loginForm');
+    const roleButtons = document.querySelectorAll('.role-btn');
     
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const errorElement = document.getElementById('loginError');
+    let selectedRole = null;
     
-    // Validate credentials
-    const user = users.find(u => u.username === username && u.password === password);
+    // Role selection
+    roleButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            selectedRole = e.currentTarget.dataset.role;
+            
+            // Highlight selected role
+            roleButtons.forEach(btn => {
+                btn.style.backgroundColor = 'white';
+                btn.style.color = 'var(--primary)';
+            });
+            
+            e.currentTarget.style.backgroundColor = 'var(--primary)';
+            e.currentTarget.style.color = 'white';
+            
+            // Show login form
+            roleSelection.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        });
+    });
     
-    if (user) {
-        // Store user session
-        sessionStorage.setItem('currentUser', JSON.stringify(user));
+    // Login form submission
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         
-        // Redirect to dashboard
-        window.location.href = 'index.html';
-    } else {
-        errorElement.textContent = 'Nume de utilizator sau parolă incorectă';
-        errorElement.style.display = 'block';
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const errorElement = document.getElementById('loginError');
         
-        // Hide error after 3 seconds
-        setTimeout(() => {
-            errorElement.style.display = 'none';
-        }, 3000);
-    }
+        // In a real app, this would be an API call
+        fetch('data/users.json')
+            .then(response => response.json())
+            .then(users => {
+                const user = users.find(u => 
+                    u.username === username && 
+                    u.password === password && 
+                    u.role === selectedRole
+                );
+                
+                if (user) {
+                    sessionStorage.setItem('currentUser', JSON.stringify(user));
+                    window.location.href = user.role === 'admin' ? 'admin.html' : 'index.html';
+                } else {
+                    showError(errorElement, 'Credențiale incorecte sau rol necorespunzător');
+                }
+            })
+            .catch(() => {
+                showError(errorElement, 'Eroare la conectare');
+            });
+    });
 });
 
-// Check if user is already logged in
-window.addEventListener('DOMContentLoaded', () => {
-    if (window.location.pathname.includes('login.html')) return;
-    
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-    if (!currentUser) {
-        window.location.href = 'login.html';
-    }
-});
+function showError(element, message) {
+    element.textContent = message;
+    element.style.display = 'block';
+    setTimeout(() => {
+        element.style.display = 'none';
+    }, 3000);
+}
