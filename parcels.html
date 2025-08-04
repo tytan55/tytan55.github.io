@@ -1,1 +1,48 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <!-- Same head as index.html -->
+</head>
+<body>
+    <div class="app-container">
+        <!-- Same sidebar as index.html -->
+        
+        <main class="main-content">
+            <header class="content-header">
+                <h2><i class="fas fa-map-marked-alt"></i> Detalii Parcelă</h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Editează
+                    </button>
+                </div>
+            </header>
+            
+            <div class="parcel-details">
+                <div class="parcel-map" id="parcelMap"></div>
+                
+                <div class="parcel-info">
+                    <h3 id="parcelName"></h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Soi:</span>
+                            <span class="info-value" id="parcelVariety"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Suprafață:</span>
+                            <span class="info-value" id="parcelArea"></span>
+                        </div>
+                        <!-- More info items -->
+                    </div>
+                    
+                    <div class="parcel-sensors">
+                        <h4><i class="fas fa-microchip"></i> Date Senzori</h4>
+                        <div class="sensor-cards" id="sensorCards"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
+    <script src="js/parcel.js"></script>
+</body>
+</html>
